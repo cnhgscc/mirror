@@ -1,5 +1,4 @@
-
-# -- cmdargs
+# -- args
 export cmdargs="main.go" // path
 
 # -- os
@@ -13,10 +12,11 @@ BuildVersion=`go version | sed -e 's/go version //g' | cut -d ' ' -f 1`
 
 # -- git
 GITBranch=`git symbolic-ref --short -q HEAD`
+GITVersion=``
 
 
 args:
-	@echo  $(BuildMod) $(GITBranch), $(BuildVersion)
+	@echo  $(BuildMod)"("$(GITBranch)")", $(BuildVersion)
 	@echo
 
 build:args
