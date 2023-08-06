@@ -1,5 +1,6 @@
 # -- args
 export cmdargs="main.go" // path
+export output="main"
 
 # -- os
 OS=`uname -s | tr 'A-Z' 'a-z'`
@@ -9,15 +10,23 @@ PWD=`pwd`
 
 BuildMod=`head -n 1 go.mod | cut -d ' ' -f 2`
 BuildVersion=`go version | sed -e 's/go version //g' | cut -d ' ' -f 1`
+BuildTime=`date '+%Y%m%d%H%M%S'`
 
 # -- git
 GITBranch=`git symbolic-ref --short -q HEAD`
-GITVersion=``
+GITVersion=`git rev-parse HEAD | cut -c1-8`
 
+
+# -- build
+ifneq ($(cmdargs), main.go)
+	output = `echo $(cmdargs) | cut -d '/' -f 2 `
+endif
 
 args:
-	@echo  $(BuildMod)"("$(GITBranch)")", $(BuildVersion)
+	@echo  $(BuildMod)"("$(GITBranch)")",$(GITVersion), $(BuildVersion)
 	@echo
 
 build:args
-	go build -o $(PWD)/_dist/ $(PWD)/$(cmdargs)
+	@echo go build -o $(PWD)/_dist/$(output)-$(BuildTime)-$(GITVersion) $(PWD)/$(cmdargs)
+	@go build -o $(PWD)/_dist/$(output)-$(BuildTime)-$(GITVersion) $(PWD)/$(cmdargs)
+
