@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	db sync.Map
+	dbstore sync.Map
 )
 
 func Init(c *Config) error {
@@ -32,7 +32,7 @@ func Init(c *Config) error {
 		mysql.New(mysql.Config{
 			Conn: sqlDB,
 		}),
-		&gorm.Config{})
+		&gorm.Config{DisableForeignKeyConstraintWhenMigrating: true})
 
 	if err != nil {
 		return err
@@ -40,11 +40,12 @@ func Init(c *Config) error {
 	if c.Scope != "" {
 		c.Scope = c.DB
 	}
-	db.Store(c.Scope, ormDB)
+	dbstore.Store(c.Scope, ormDB)
 	return nil
 }
 
-func Use(name string) *gorm.DB {
-	c, _ := db.Load(name)
+// S select db
+func S(db string) *gorm.DB {
+	c, _ := dbstore.Load(db)
 	return c.(*gorm.DB)
 }

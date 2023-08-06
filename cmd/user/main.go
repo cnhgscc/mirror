@@ -25,7 +25,7 @@ func main() {
 		fmt.Println(err)
 	}
 
-	db := gomysql.Use("lucky")
+	db := gomysql.S("lucky")
 
 	// Migrate the schema
 	db.AutoMigrate(&Product{})
