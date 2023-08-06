@@ -30,3 +30,4 @@ build:args
 	@echo go build -o $(PWD)/_dist/$(output)-$(BuildTime)-$(GITVersion) $(PWD)/$(cmdargs)
 	@go build -o $(PWD)/_dist/$(output)-$(BuildTime)-$(GITVersion) $(PWD)/$(cmdargs)
 
+
