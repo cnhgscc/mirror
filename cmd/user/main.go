@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"net"
 
+	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 
 	"mirror/pkg/build"
@@ -25,7 +27,9 @@ func main() {
 	}
 	cr.Register()
 
-	lis, err := net.Listen("tcp", "127.0.0.1:9000")
+	addr := fmt.Sprintf("%v:%v", viper.Get("server.host"), viper.Get("server.port"))
+	fmt.Println("serve: " + addr)
+	lis, err := net.Listen("tcp", addr)
 	if err != nil {
 		return
 	}
