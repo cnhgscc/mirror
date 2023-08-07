@@ -1,28 +1,37 @@
 package cregistry
 
 import (
+	"sync"
+
 	"github.com/hashicorp/consul/api"
 )
 
-func Register() error {
-	client, err := NewClient()
-	if err != nil {
-		return err
+var (
+	crs sync.Map
+)
+
+// NewCRegistry new cregistry
+func NewCRegistry(scope string, addr string) (*CRegistry, error) {
+	r, ok := crs.Load(scope)
+	if ok {
+		return r.(*CRegistry), nil
 	}
-	err = client.Agent().ServiceRegister(&api.AgentServiceRegistration{
-		ID:      "g",
-		Name:    "g",
-		Address: "127.0.0.1",
-		Port:    9000,
-		Check: &api.AgentServiceCheck{
-			CheckID:  "g",
-			TCP:      "127.0.0.1:9000",
-			Timeout:  "1s",
-			Interval: "3s",
-		},
-	})
+	client, err := NewClient(addr)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	cr := &CRegistry{C: client}
+	crs.Store(scope, cr)
+	return cr, nil
+}
+
+type CRegistry struct {
+	C *api.Client
+}
+
+func (cr *CRegistry) Register() {
+	go func() {
+		_ = register(cr.C)
+	}()
+
 }

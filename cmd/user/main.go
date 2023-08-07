@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net"
 
 	"google.golang.org/grpc"
@@ -14,13 +13,11 @@ import (
 
 func main() {
 
-	go func() {
-		err := cregistry.Register()
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-	}()
+	cr, err := cregistry.NewCRegistry("user", "127.0.0.1:9000")
+	if err != nil {
+		return
+	}
+	cr.Register()
 
 	lis, err := net.Listen("tcp", "127.0.0.1:9000")
 	if err != nil {
