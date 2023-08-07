@@ -22,8 +22,6 @@ func main() {
 		}
 	}()
 
-	fmt.Println("serve")
-
 	lis, err := net.Listen("tcp", "127.0.0.1:9000")
 	if err != nil {
 		return
