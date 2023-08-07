@@ -26,12 +26,16 @@ func NewCRegistry(scope string, consul string) (*CRegistry, error) {
 }
 
 type CRegistry struct {
-	C *api.Client
+	C  *api.Client
+	ID string
 }
 
 func (cr *CRegistry) Register() {
 	go func() {
-		_ = register(cr.C)
+		_ = register(cr)
 	}()
 
+}
+func (cr *CRegistry) UNRegister() {
+	_ = unregister(cr)
 }

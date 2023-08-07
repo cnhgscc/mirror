@@ -7,12 +7,11 @@ import (
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 
+	"mirror/internal/pkg/usecase"
 	"mirror/pkg/build"
 	"mirror/pkg/cmdargs"
 	"mirror/pkg/cregistry"
 	"mirror/pkg/pb"
-
-	"mirror/internal/pkg/usecase"
 )
 
 func init() {
@@ -26,6 +25,7 @@ func main() {
 		return
 	}
 	cr.Register()
+	defer cr.UNRegister()
 
 	addr := fmt.Sprintf("%v:%v", viper.Get("server.host"), viper.Get("server.port"))
 	fmt.Println("serve: " + addr)
@@ -33,7 +33,6 @@ func main() {
 	if err != nil {
 		return
 	}
-
 	g := grpc.NewServer()
 	pb.RegisterGreeterServer(g, new(usecase.GrpcGreater))
 	_ = g.Serve(lis)
