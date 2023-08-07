@@ -7,11 +7,12 @@ import (
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 
-	"mirror/internal/pkg/usecase"
 	"mirror/pkg/build"
 	"mirror/pkg/cmdargs"
 	"mirror/pkg/cregistry"
 	"mirror/pkg/pb"
+
+	"mirror/internal/pkg/usecase"
 )
 
 func init() {
