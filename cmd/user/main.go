@@ -5,15 +5,21 @@ import (
 
 	"google.golang.org/grpc"
 
+	"mirror/pkg/build"
+	"mirror/pkg/cmdargs"
 	"mirror/pkg/cregistry"
 	"mirror/pkg/pb"
 
 	"mirror/internal/pkg/usecase"
 )
 
+func init() {
+	cmdargs.Init()
+}
+
 func main() {
 
-	cr, err := cregistry.NewCRegistry("user", "127.0.0.1:9000")
+	cr, err := cregistry.NewCRegistry(build.CMDName(), "127.0.0.1:9000")
 	if err != nil {
 		return
 	}

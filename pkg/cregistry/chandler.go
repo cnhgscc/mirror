@@ -11,12 +11,12 @@ var (
 )
 
 // NewCRegistry new cregistry
-func NewCRegistry(scope string, addr string) (*CRegistry, error) {
+func NewCRegistry(scope string, consul string) (*CRegistry, error) {
 	r, ok := crs.Load(scope)
 	if ok {
 		return r.(*CRegistry), nil
 	}
-	client, err := NewClient(addr)
+	client, err := NewClient(consul)
 	if err != nil {
 		return nil, err
 	}
