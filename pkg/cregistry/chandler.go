@@ -20,12 +20,13 @@ func NewCRegistry(scope string, consul string) (*CRegistry, error) {
 	if err != nil {
 		return nil, err
 	}
-	cr := &CRegistry{C: client}
+	cr := &CRegistry{C: client, N: scope}
 	crs.Store(scope, cr)
 	return cr, nil
 }
 
 type CRegistry struct {
+	N  string
 	C  *api.Client
 	ID string
 }

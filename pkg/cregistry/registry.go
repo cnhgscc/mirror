@@ -13,13 +13,12 @@ import (
 // 2. 动态获取服务的ip
 func register(cr *CRegistry) error {
 
-	client := cr.C
 	osip := "127.0.0.1"
 	port := viper.GetInt("server.port")
-	cr.ID = osip
+	cr.ID = fmt.Sprintf("%s:%d", osip, port)
 
-	err := client.Agent().ServiceRegister(&api.AgentServiceRegistration{
-		ID:      osip,
+	err := cr.C.Agent().ServiceRegister(&api.AgentServiceRegistration{
+		ID:      cr.ID,
 		Name:    build.CMDName(),
 		Address: osip,
 		Port:    port,
