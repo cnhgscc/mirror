@@ -6,11 +6,9 @@ import (
 	"github.com/hashicorp/consul/api"
 )
 
-// 1. 使用 viper 获取服务的端口
-// 2. 动态获取服务的ip
 func register(cr *CRegistry) error {
 
-	osip := "127.0.0.1"
+	osip := ServiceAddr()
 	cr.ID = fmt.Sprintf("%s@%s", cr.Name, osip)
 
 	err := cr.C.Agent().ServiceRegister(&api.AgentServiceRegistration{
