@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 
-	"mirror/pkg/pb"
+	"github.com/cnhgscc/mirror/pkg/pb"
 )
 
 var (

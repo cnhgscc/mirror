@@ -7,8 +7,8 @@ import (
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 
-	"mirror/pkg/cmdargs"
-	"mirror/pkg/cregistry"
+	"github.com/cnhgscc/mirror/pkg/cmdargs"
+	"github.com/cnhgscc/mirror/pkg/cregistry"
 )
 
 func init() {

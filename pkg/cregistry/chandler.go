@@ -6,7 +6,7 @@ import (
 	"github.com/hashicorp/consul/api"
 	"github.com/spf13/viper"
 
-	"mirror/pkg/build"
+	"github.com/cnhgscc/mirror/pkg/build"
 )
 
 var (
