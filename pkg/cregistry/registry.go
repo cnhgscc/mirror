@@ -23,7 +23,7 @@ func register(cr *CRegistry) error {
 		Address: osip,
 		Port:    port,
 		Check: &api.AgentServiceCheck{
-			CheckID:  "g",
+			CheckID:  "tcp",
 			TCP:      fmt.Sprintf("%s:%d", osip, port),
 			Timeout:  "1s",
 			Interval: "3s",

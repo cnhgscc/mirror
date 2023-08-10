@@ -44,3 +44,11 @@ func (cr *CRegistry) Register() {
 func (cr *CRegistry) UNRegister() {
 	_ = unregister(cr)
 }
+
+func (cr *CRegistry) S(name string) (*api.AgentService, error) {
+	service, q, err := cr.C.Agent().Service(cr.ID, nil)
+	fmt.Println(q)
+
+	return service, err
+
+}
