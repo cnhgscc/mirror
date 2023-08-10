@@ -1,6 +1,7 @@
 package cregistry
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/hashicorp/consul/api"
@@ -11,12 +12,15 @@ var (
 )
 
 // NewCRegistry new cregistry
-func NewCRegistry(scope string, consul string) (*CRegistry, error) {
+func NewCRegistry(scope string, consul ...string) (*CRegistry, error) {
 	r, ok := crs.Load(scope)
 	if ok {
 		return r.(*CRegistry), nil
 	}
-	client, err := NewClient(consul)
+	if len(consul) == 0 {
+		return nil, fmt.Errorf("%s not found", scope)
+	}
+	client, err := NewClient(consul[0])
 	if err != nil {
 		return nil, err
 	}

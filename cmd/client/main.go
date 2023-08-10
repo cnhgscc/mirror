@@ -10,9 +10,6 @@ import (
 	"mirror/pkg/build"
 	"mirror/pkg/cmdargs"
 	"mirror/pkg/cregistry"
-	"mirror/pkg/pb"
-
-	"mirror/internal/pkg/usecase"
 )
 
 func init() {
@@ -35,7 +32,6 @@ func main() {
 		return
 	}
 	g := grpc.NewServer()
-	pb.RegisterGreeterServer(g, new(usecase.GrpcGreater))
 	_ = g.Serve(lis)
 
 }
