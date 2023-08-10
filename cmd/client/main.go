@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 
-	"mirror/pkg/build"
 	"mirror/pkg/cmdargs"
 	"mirror/pkg/cregistry"
 )
@@ -21,15 +20,11 @@ func main() {
 	Init()
 	defer Run()
 
-	cr, _ := cregistry.NewCRegistry(build.CMDName())
-	s, _ := cr.S("127.0.0.1:9002")
-	fmt.Println(s.Address, s.ID, s.Namespace)
-
 }
 
 func Init() {
 
-	cr, err := cregistry.NewCRegistry(build.CMDName(), "127.0.0.1:9000")
+	cr, err := cregistry.NewCRegistry("cr", cregistry.WithHTTPPort(viper.Get("server.port").(int)))
 	if err != nil {
 		return
 	}

@@ -4,9 +4,6 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/consul/api"
-	"github.com/spf13/viper"
-
-	"mirror/pkg/build"
 )
 
 // 1. 使用 viper 获取服务的端口
@@ -14,17 +11,17 @@ import (
 func register(cr *CRegistry) error {
 
 	osip := "127.0.0.1"
-	port := viper.GetInt("server.port")
-	cr.ID = fmt.Sprintf("%s:%d", osip, port)
+	cr.ID = fmt.Sprintf("%s@%s", cr.Name, osip)
 
 	err := cr.C.Agent().ServiceRegister(&api.AgentServiceRegistration{
 		ID:      cr.ID,
-		Name:    build.CMDName(),
+		Name:    cr.Name,
 		Address: osip,
-		Port:    port,
+		Port:    cr.HTTPPort,
+		Meta:    cr.Meta,
 		Check: &api.AgentServiceCheck{
 			CheckID:  "tcp",
-			TCP:      fmt.Sprintf("%s:%d", osip, port),
+			TCP:      fmt.Sprintf("%s:%d", osip, cr.HTTPPort),
 			Timeout:  "1s",
 			Interval: "3s",
 		},

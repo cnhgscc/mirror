@@ -1,10 +1,12 @@
 package cregistry
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/hashicorp/consul/api"
+	"github.com/spf13/viper"
+
+	"mirror/pkg/build"
 )
 
 var (
@@ -12,27 +14,47 @@ var (
 )
 
 // NewCRegistry new cregistry
-func NewCRegistry(scope string, consul ...string) (*CRegistry, error) {
+func NewCRegistry(scope string, opt ...Option) (*CRegistry, error) {
+
 	r, ok := crs.Load(scope)
 	if ok {
 		return r.(*CRegistry), nil
 	}
-	if len(consul) == 0 {
-		return nil, fmt.Errorf("%s not found", scope)
+
+	node := &Node{
+		Registry: "127.0.0.1:8500",
+
+		Name:     build.CMDName(),
+		GRPCPort: 7001,
+		HTTPPort: viper.GetInt("server.port"),
+		Meta: map[string]string{
+			"grpc_port": "",
+			"http_port": "",
+		},
 	}
-	client, err := NewClient(consul[0])
+
+	for _, option := range opt {
+		option(node)
+	}
+
+	client, err := NewClient(node.Registry)
 	if err != nil {
 		return nil, err
 	}
+
 	cr := &CRegistry{C: client, N: scope}
+	cr.Node = *node
 	crs.Store(scope, cr)
 	return cr, nil
 }
 
 type CRegistry struct {
-	N  string
-	C  *api.Client
+	Node
+
+	C *api.Client
+
 	ID string
+	N  string
 }
 
 func (cr *CRegistry) Register() {
@@ -43,12 +65,4 @@ func (cr *CRegistry) Register() {
 }
 func (cr *CRegistry) UNRegister() {
 	_ = unregister(cr)
-}
-
-func (cr *CRegistry) S(name string) (*api.AgentService, error) {
-	service, q, err := cr.C.Agent().Service(cr.ID, nil)
-	fmt.Println(q)
-
-	return service, err
-
 }
