@@ -23,28 +23,12 @@ func main() {
 	defer Run()
 
 	cr, _ := cregistry.NewCRegistry("cr")
-	services := cr.Services("grpc")
-	for _, srv := range services {
-		host := srv.ServiceAddress
-		port, ok := srv.ServiceMeta[cregistry.GRPCPort]
-		if !ok || port == "" {
-			continue
-		}
+	gs, _ := cr.GS("grpc")
 
-		dial, err := grpc.Dial(fmt.Sprintf("%s:%s", host, port), grpc.WithInsecure())
-		if err != nil {
-			return
-		}
-		client := pb.NewGreeterClient(dial)
-		args := &pb.HelloRequest{Name: "3123"}
-		reply, err := client.SayHello(context.Background(), args)
-		if err != nil {
-			return
-		}
-		fmt.Println(reply)
-
-	}
-
+	client := pb.NewGreeterClient(gs)
+	args := &pb.HelloRequest{Name: "3123"}
+	reply, _ := client.SayHello(context.Background(), args)
+	fmt.Println(reply)
 }
 
 func Init() {
