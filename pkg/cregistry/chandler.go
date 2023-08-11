@@ -1,6 +1,7 @@
 package cregistry
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/hashicorp/consul/api"
@@ -11,6 +12,11 @@ import (
 
 var (
 	crs sync.Map
+)
+
+const (
+	GRPCPort = "grpc_port"
+	HTTPPort = "http_port"
 )
 
 // NewCRegistry new cregistry
@@ -28,8 +34,8 @@ func NewCRegistry(scope string, opt ...Option) (*CRegistry, error) {
 		GRPCPort: 7001,
 		HTTPPort: viper.GetInt("server.port"),
 		Meta: map[string]string{
-			"grpc_port": "",
-			"http_port": "",
+			GRPCPort: "",
+			HTTPPort: "",
 		},
 	}
 
@@ -65,4 +71,11 @@ func (cr *CRegistry) Register() {
 }
 func (cr *CRegistry) UNRegister() {
 	_ = unregister(cr)
+}
+
+func (cr *CRegistry) Services(name string) []*api.CatalogService {
+	service, meta, err := cr.C.Catalog().Service(name, "", nil)
+	fmt.Println(meta, err)
+	return service
+
 }
