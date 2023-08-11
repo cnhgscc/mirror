@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"time"
 
 	"github.com/cnhgscc/mirror/pkg/pb"
 )
@@ -15,7 +16,7 @@ type GrpcGreater struct {
 }
 
 func (g GrpcGreater) SayHello(ctx context.Context, request *pb.HelloRequest) (*pb.HelloReply, error) {
-	return &pb.HelloReply{Message: request.Name + ":1"}, nil
+	return &pb.HelloReply{Message: request.Name + ":" + time.Now().Format(time.RFC3339)}, nil
 }
 
 func (g GrpcGreater) SayHelloAgain(ctx context.Context, request *pb.HelloRequest) (*pb.HelloReply, error) {
