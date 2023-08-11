@@ -58,11 +58,11 @@ func NewCRegistry(scope string, opt ...Option) (*CRegistry, error) {
 }
 
 type CRegistry struct {
-	Node
+	N string
+	sync.Mutex
 	C *api.Client
 
-	ID string
-	N  string
+	Node // 节点信息
 }
 
 func (cr *CRegistry) Register() {
@@ -75,24 +75,55 @@ func (cr *CRegistry) UNRegister() {
 	_ = unregister(cr)
 }
 
-func (cr *CRegistry) Services(name string) []*api.CatalogService {
-	service, _, _ := cr.C.Catalog().Service(name, "", nil)
-	return service
-}
+var (
+	GRPCNodes sync.Map // GRPC节点信息
+)
 
-func (cr *CRegistry) GS(name string) (*grpc.ClientConn, error) {
-	services, _, _ := cr.C.Catalog().Service(name, "", nil)
-	if len(services) == 0 {
-		return nil, fmt.Errorf("%s not found", name)
+func (cr *CRegistry) GS(name string) (*ClientConn, error) {
+	node, ok := GRPCNodes.Load(name)
+	if !ok {
+		timer := time.NewTicker(3 * time.Second)
+		go func() {
+			for range timer.C {
+				ss, _, _ := cr.C.Catalog().Service(name, "", nil)
+				if len(ss) == 0 {
+					return
+				}
+				GRPCNodes.Store(name, ss)
+			}
+		}()
+		first, _, _ := cr.C.Catalog().Service(name, "", nil)
+		if len(first) == 0 {
+			GRPCNodes.Store(name, []*api.CatalogService{})
+			return nil, fmt.Errorf("%s not found", name)
+		}
+		GRPCNodes.Store(name, first)
+		node, _ = GRPCNodes.Load(name)
 	}
 
+	services, ok := node.([]*api.CatalogService)
+	if !ok || len(services) == 0 {
+		return nil, fmt.Errorf("%s not found", name)
+	}
 	rand.Seed(time.Now().UnixNano())
 	index := rand.Intn(len(services))
 	gs := services[index]
 	port, ok := gs.ServiceMeta[GRPCPort]
 	if !ok || port == "" {
-		return nil, fmt.Errorf("not support grpc")
+		return nil, fmt.Errorf("%s not support", name)
 	}
 	host := gs.ServiceAddress
-	return grpc.Dial(fmt.Sprintf("%s:%s", host, port), grpc.WithInsecure())
+
+	cc, ok := GRPCConns.Load(gs.ServiceID)
+	if ok {
+		return cc.(*ClientConn), nil
+	}
+
+	tmp, err := grpc.Dial(fmt.Sprintf("%s:%s", host, port), grpc.WithInsecure())
+	if err != nil {
+		return nil, err
+	}
+	conn := &ClientConn{tmp, gs.ServiceID}
+	GRPCConns.Store(gs.ServiceID, conn)
+	return conn, nil
 }

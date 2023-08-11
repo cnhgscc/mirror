@@ -9,10 +9,10 @@ import (
 func register(cr *CRegistry) error {
 
 	osip := ServiceAddr()
-	cr.ID = fmt.Sprintf("%s@%s", cr.Name, osip)
+	id := fmt.Sprintf("%s@%s", cr.Name, osip)
 
 	err := cr.C.Agent().ServiceRegister(&api.AgentServiceRegistration{
-		ID:      cr.ID,
+		ID:      id,
 		Name:    cr.Name,
 		Address: osip,
 		Port:    cr.HTTPPort,
@@ -31,6 +31,7 @@ func register(cr *CRegistry) error {
 }
 
 func unregister(cr *CRegistry) error {
-	return cr.C.Agent().ServiceDeregister(cr.ID)
-
+	osip := ServiceAddr()
+	id := fmt.Sprintf("%s@%s", cr.Name, osip)
+	return cr.C.Agent().ServiceDeregister(id)
 }
