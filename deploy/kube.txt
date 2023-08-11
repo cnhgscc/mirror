@@ -1,0 +1,117 @@
+k8s v1.27.4
+==================================================
+
+
+# 列出了容器的状态。
+crictl --runtime-endpoint unix:///run/containerd/containerd.sock ps -a
+# 查询容器的镜像
+crictl --runtime-endpoint unix:///run/containerd/containerd.sock img
+# 查询CONTAINER的日志
+crictl --runtime-endpoint unix:///run/containerd/containerd.sock logs 6bf1df3e80815
+# 查检查容器运行时中的容器详细信息
+crictl --runtime-endpoint unix:///run/containerd/containerd.sock inspect  6bf1df3e80815
+# 查询版本信息
+crictl --runtime-endpoint unix:///run/containerd/containerd.sock version
+# 获取镜像
+crictl --runtime-endpoint unix:///run/containerd/containerd.sock pull nginx
+# 进入容器
+crictl --runtime-endpoint unix:///run/containerd/containerd.sock exec -it c695db4c98c49 sh
+
+
+# 禁用swap
+# sudo swapoff -a
+# sudo vim /etc/fstab
+/swapfile none swap sw 0 0
+
+
+# Kubernetes需要启用IP转发功能
+echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward
+
+# kubeadm init --pod-network-cidr=192.168.0.0/16 [--image-repository=]
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 172.20.243.39:6443 --token z64ka8.auqszi6otoy6kzs7 \
+        --discovery-token-ca-cert-hash sha256:a671d39f946e784481a16701a7bab2c4db743871de7a56bf7053b603b1f3b876
+
+
+# 如果你希望能够在控制平面节点上调度 Pod，例如单机 Kubernetes 集群
+kubectl taint nodes --all node-role.kubernetes.io/control-plane-
+
+# 管理命令
+sudo kubeadm reset
+sudo systemctl daemon-reload
+sudo systemctl restart kubelet
+sudo systemctl status kubelet
+sudo systemctl status containerd
+
+# 查看所有资源
+kubectl get all
+
+kubectl get pods --all-namespaces
+kubectl describe pod coredns-5d78c9869d-58x9w -n kube-system
+kubectl logs calico-node-p7c8z -n kube-system
+kubectl exec -it etcd-cnhgscc -n kube-system --container etcd -- /bin/bash
+kubectl cp 命令将容器中的文件复制到本地，然后在本地环境中查看。
+kubectl delete -f calico.yaml
+kubectl get events
+kubectl config set-context --current --namespace=kube-system
+
+
+# pod status
+Running：Pod 正在运行。
+Pending：Pod 正在等待分配资源或者正在拉取镜像。
+CrashLoopBackOff：Pod 在启动后不断崩溃并重启。
+Error：Pod 遇到了错误。
+Completed：Pod 已经成功完成任务并退出。
+Unknown：无法获取 Pod 的状态信息。
+Terminating：Pod 正在被终止。一旦 Pod 被终止，它将不再运行，并且将从集群中删除
+
+
+# 查询Kubernetes集群中可用的镜像信息
+kubectl get pods --all-namespaces -o jsonpath="{..image}" | tr -s '[[:space:]]' '\n' | sort | uniq
+
+# --------------------
+# docker info --format '{{.CgroupDriver}}'
+cgroupfs
+
+# kubectl get nodes -o jsonpath='{.items[*].status.nodeInfo.containerRuntimeVersion}'
+containerd://1.7.2
+
+# version
+docker version
+kubectl version --client
+
+# 默认配置文件
+kubeadm config print init-defaults
+
+
+# 获取服务
+kubectl get service nginx-service -o wide
+
+# 获取部署的服务
+kubectl get deployments nginx-deployment -o wide
+
+
+# 流量转发到  service 对外提供服务 或 使用  LoadBalancer 类型的 Service 对外服务
+kubectl port-forward service/nginx-service 8080:80
+
+
+# https://helm.sh/
+# https://artifacthub.io/
+sudo snap install helm --classic
+helm uninstall consul -n consul
+
+
+# 检查Kubernetes集群的DNS配置
+kubectl get cm -n kube-system coredns -o yaml
+# 查看Consul的Service配置
+kubectl get svc -n consul
+
+# pv
+kubectl get storageclass
+kubectl get pvc
+kubectl get pv
+
+
+
