@@ -3,13 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/spf13/viper"
+	"google.golang.org/grpc"
 	"net"
 	"os"
 	"os/signal"
 	"syscall"
-
-	"github.com/spf13/viper"
-	"google.golang.org/grpc"
+	"time"
 
 	"github.com/cnhgscc/mirror/pkg/cmdargs"
 	"github.com/cnhgscc/mirror/pkg/cregistry"
@@ -21,15 +21,22 @@ func init() {
 }
 
 func Run() {
-	cr, _ := cregistry.NewCRegistry("cr")
-	gs, err := cr.GS("server")
-	if err != nil {
-		return
-	}
-	client := pb.NewGreeterClient(gs)
-	args := &pb.HelloRequest{Name: "3123"}
-	reply, _ := client.SayHello(context.Background(), args)
-	fmt.Println(reply)
+
+	go func() {
+		for true {
+			cr, _ := cregistry.NewCRegistry("cr")
+			gs, err := cr.GS("server")
+			if err != nil {
+				return
+			}
+
+			client := pb.NewGreeterClient(gs)
+			args := &pb.HelloRequest{Name: "3123"}
+			reply, _ := client.SayHello(context.Background(), args)
+			fmt.Println(reply)
+			time.Sleep(3 * time.Second)
+		}
+	}()
 }
 
 func main() {
