@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/cnhgscc/mirror/pkg/pb"
 	"net"
 	"os"
 	"os/signal"
@@ -14,6 +13,7 @@ import (
 
 	"github.com/cnhgscc/mirror/pkg/cmdargs"
 	"github.com/cnhgscc/mirror/pkg/cregistry"
+	"github.com/cnhgscc/mirror/pkg/pb"
 )
 
 func init() {
