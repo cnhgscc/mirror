@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"github.com/cnhgscc/mirror/pkg/pb"
 	"net"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
@@ -17,32 +20,19 @@ func init() {
 	cmdargs.Init()
 }
 
-func main() {
-
-	Init()
-	defer Run()
-
+func Run() {
 	cr, _ := cregistry.NewCRegistry("cr")
-	gs, _ := cr.GS("grpc")
-
+	gs, err := cr.GS("server")
+	if err != nil {
+		return
+	}
 	client := pb.NewGreeterClient(gs)
 	args := &pb.HelloRequest{Name: "3123"}
 	reply, _ := client.SayHello(context.Background(), args)
 	fmt.Println(reply)
 }
 
-func Init() {
-
-	cr, err := cregistry.NewCRegistry("cr", cregistry.WithHTTPPort(viper.Get("server.port").(int)))
-	if err != nil {
-		return
-	}
-	cr.Register()
-	defer cr.UNRegister()
-
-}
-
-func Run() {
+func main() {
 
 	addr := fmt.Sprintf("%v:%v", viper.Get("server.host"), viper.Get("server.port"))
 	fmt.Println("serve: " + addr)
@@ -50,7 +40,23 @@ func Run() {
 	if err != nil {
 		return
 	}
-	g := grpc.NewServer()
-	_ = g.Serve(lis)
 
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGINT, syscall.SIGALRM)
+	g := grpc.NewServer()
+	go func() {
+		_ = g.Serve(lis)
+	}()
+	defer g.GracefulStop()
+
+	cr, err := cregistry.NewCRegistry("cr", cregistry.WithGRPCPort(viper.Get("server.port").(int)))
+	if err != nil {
+		return
+	}
+	cr.Register()
+	defer cr.UNRegister()
+
+	Run()
+
+	<-stop
 }

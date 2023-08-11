@@ -82,6 +82,10 @@ func (cr *CRegistry) Services(name string) []*api.CatalogService {
 
 func (cr *CRegistry) GS(name string) (*grpc.ClientConn, error) {
 	services, _, _ := cr.C.Catalog().Service(name, "", nil)
+	if len(services) == 0 {
+		return nil, fmt.Errorf("%s not found", name)
+	}
+
 	rand.Seed(time.Now().UnixNano())
 	index := rand.Intn(len(services))
 	gs := services[index]
