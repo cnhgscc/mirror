@@ -3,13 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/spf13/viper"
-	"google.golang.org/grpc"
 	"net"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/spf13/viper"
+	"google.golang.org/grpc"
 
 	"github.com/cnhgscc/mirror/pkg/cmdargs"
 	"github.com/cnhgscc/mirror/pkg/cregistry"
