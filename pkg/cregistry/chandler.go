@@ -13,6 +13,10 @@ import (
 	"github.com/cnhgscc/mirror/pkg/build"
 )
 
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
+
 var (
 	crs sync.Map
 )
@@ -105,7 +109,7 @@ func (cr *CRegistry) GS(name string) (*ClientConn, error) {
 	if !ok || len(services) == 0 {
 		return nil, fmt.Errorf("%s not found", name)
 	}
-	rand.Seed(time.Now().UnixNano())
+
 	index := rand.Intn(len(services))
 	gs := services[index]
 	port, ok := gs.ServiceMeta[GRPCPort]
