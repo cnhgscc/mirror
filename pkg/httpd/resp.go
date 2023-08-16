@@ -28,11 +28,11 @@ func (rep *Resp) Byte() []byte {
 	return tmp
 }
 
-func (rep *Resp) JSONRespRender(v any) string {
+func (rep *Resp) JSONRespRender(v any) (string, error) {
 	if rep.RespErr != nil {
-		return ""
+		return "", rep.RespErr
 	}
 	s := rep.Byte()
 	rep.RespErr = json.Unmarshal(s, v)
-	return string(s)
+	return string(s), rep.RespErr
 }
