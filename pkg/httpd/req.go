@@ -1,4 +1,4 @@
-package creqswr
+package httpd
 
 import (
 	"bytes"
