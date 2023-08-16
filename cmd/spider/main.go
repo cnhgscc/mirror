@@ -7,6 +7,6 @@ import (
 )
 
 func main() {
-	resp := httpd.NewHttpd(httpd.NewRequest("https://www.baidu.com"))
-	fmt.Println(resp.Text())
+	resp := httpd.NewURL(httpd.NewRequest("https://www.baidu.com", httpd.WithMethod("POST")))
+	fmt.Println(resp.Str())
 }

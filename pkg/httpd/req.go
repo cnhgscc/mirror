@@ -16,6 +16,10 @@ type Request struct {
 	ReqMethod string
 	ReqBody   io.Reader
 	ReqErr    error
+
+	ReqHeader http.Header
+
+	BasicAuth []string
 }
 
 func (r *Request) Error() error {
@@ -35,7 +39,17 @@ func NewRequest(url string, opts ...NewReqOption) *Request {
 	if err != nil {
 		req.ReqErr = err
 	}
+
 	req.Request = hreq
+
+	if header := req.ReqHeader.Get("Content-Type"); header != "" {
+		req.Request.Header.Set("Content-Type", header)
+	}
+
+	if req.BasicAuth != nil {
+		req.Request.SetBasicAuth(req.BasicAuth[0], req.BasicAuth[1])
+	}
+
 	return req
 }
 
@@ -60,6 +74,14 @@ func WithJSONBody(payload any) NewReqOption {
 			req.ReqErr = err
 			return
 		}
+		req.ReqHeader = http.Header{}
+		req.ReqHeader.Set("Content-Type", "application/json")
 		req.ReqBody = bytes.NewBuffer(tmp)
+	}
+}
+
+func WithBasicAuth(username, password string) NewReqOption {
+	return func(req *Request) {
+		req.BasicAuth = []string{username, password}
 	}
 }

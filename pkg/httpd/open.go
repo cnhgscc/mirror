@@ -9,5 +9,6 @@ func init() {
 }
 
 func NewURL(req *Request) *Resp {
+	// req.Request.Method = strings.ToUpper(method)
 	return client.NewURL(req)
 }
