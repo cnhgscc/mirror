@@ -30,7 +30,6 @@ func Run() {
 			if err != nil {
 				return
 			}
-
 			client := pb.NewGreeterClient(gs)
 			args := &pb.HelloRequest{Name: "3123"}
 			reply, _ := client.SayHello(context.Background(), args)
