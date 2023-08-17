@@ -1,6 +1,7 @@
-package creqswr
+package httpd
 
 import (
+	"encoding/json"
 	"io"
 	"net/http"
 )
@@ -11,7 +12,7 @@ type Resp struct {
 	RespErr error
 }
 
-func (rep *Resp) Text() string {
+func (rep *Resp) Str() string {
 	tmp, err := io.ReadAll(rep.Response.Body)
 	if err != nil {
 		return ""
@@ -25,4 +26,13 @@ func (rep *Resp) Byte() []byte {
 		return []byte{}
 	}
 	return tmp
+}
+
+func (rep *Resp) JSONRespRender(v any) (string, error) {
+	if rep.RespErr != nil {
+		return "", rep.RespErr
+	}
+	s := rep.Byte()
+	rep.RespErr = json.Unmarshal(s, v)
+	return string(s), rep.RespErr
 }
