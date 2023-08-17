@@ -10,6 +10,7 @@ func init() {
 	client = NewClient()
 }
 
+// NewURL  send http.Request
 func NewURL(req *Request, header ...Header) *Resp {
 	// req.Request.Method = strings.ToUpper(method)
 	for _, h := range header {
@@ -18,4 +19,5 @@ func NewURL(req *Request, header ...Header) *Resp {
 	return client.NewURL(req)
 }
 
+// Header add header for http.Request
 type Header func(header *http.Header)
