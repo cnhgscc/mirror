@@ -17,4 +17,5 @@ func NewURL(req *Requ, header ...Header) *Resp {
 	return client.NewURL(req)
 }
 
+// Header add header for http.Request
 type Header func(header *http.Header)
