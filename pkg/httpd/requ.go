@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"io"
 	"net/http"
 )
 
@@ -13,17 +12,12 @@ type Requ struct {
 
 	ReqCtx    context.Context
 	ReqURL    string
+	ReqHeader http.Header
 	ReqMethod string
-	ReqBody   io.Reader
+	ReqBody   string
 	ReqErr    error
 
-	ReqHeader http.Header
-
 	BasicAuth []string
-}
-
-func (r *Requ) Error() error {
-	return r.ReqErr
 }
 
 func NewRequest(url string, opts ...NewReqOption) *Requ {
@@ -35,7 +29,7 @@ func NewRequest(url string, opts ...NewReqOption) *Requ {
 		requ.ReqCtx = context.Background()
 	}
 
-	req, err := http.NewRequestWithContext(requ.ReqCtx, requ.ReqMethod, requ.ReqURL, requ.ReqBody)
+	req, err := http.NewRequestWithContext(requ.ReqCtx, requ.ReqMethod, requ.ReqURL, bytes.NewBufferString(requ.ReqBody))
 	if err != nil {
 		requ.ReqErr = err
 	}
@@ -76,7 +70,7 @@ func WithJSONBody(payload any) NewReqOption {
 		}
 		req.ReqHeader = http.Header{}
 		req.ReqHeader.Set("Content-Type", "application/json")
-		req.ReqBody = bytes.NewBuffer(tmp)
+		req.ReqBody = string(tmp)
 	}
 }
 
