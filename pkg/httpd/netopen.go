@@ -1,6 +1,8 @@
 package httpd
 
-import "net/http"
+import (
+	"net/http"
+)
 
 var (
 	client *Client
