@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-type Request struct {
+type Requ struct {
 	*http.Request
 
 	ReqCtx    context.Context
@@ -22,53 +22,53 @@ type Request struct {
 	BasicAuth []string
 }
 
-func (r *Request) Error() error {
+func (r *Requ) Error() error {
 	return r.ReqErr
 }
 
-func NewRequest(url string, opts ...NewReqOption) *Request {
-	req := &Request{ReqURL: url, ReqMethod: "GET"}
+func NewRequest(url string, opts ...NewReqOption) *Requ {
+	requ := &Requ{ReqURL: url, ReqMethod: "GET"}
 	for _, opt := range opts {
-		opt(req)
+		opt(requ)
 	}
-	if req.ReqCtx == nil {
-		req.ReqCtx = context.Background()
+	if requ.ReqCtx == nil {
+		requ.ReqCtx = context.Background()
 	}
 
-	hreq, err := http.NewRequestWithContext(req.ReqCtx, req.ReqMethod, req.ReqURL, req.ReqBody)
+	req, err := http.NewRequestWithContext(requ.ReqCtx, requ.ReqMethod, requ.ReqURL, requ.ReqBody)
 	if err != nil {
-		req.ReqErr = err
+		requ.ReqErr = err
 	}
 
-	req.Request = hreq
+	requ.Request = req
 
-	if header := req.ReqHeader.Get("Content-Type"); header != "" {
-		req.Request.Header.Set("Content-Type", header)
+	if header := requ.ReqHeader.Get("Content-Type"); header != "" {
+		requ.Request.Header.Set("Content-Type", header)
 	}
 
-	if req.BasicAuth != nil {
-		req.Request.SetBasicAuth(req.BasicAuth[0], req.BasicAuth[1])
+	if requ.BasicAuth != nil {
+		requ.Request.SetBasicAuth(requ.BasicAuth[0], requ.BasicAuth[1])
 	}
 
-	return req
+	return requ
 }
 
-type NewReqOption func(req *Request)
+type NewReqOption func(requ *Requ)
 
 func WithContext(ctx context.Context) NewReqOption {
-	return func(req *Request) {
+	return func(req *Requ) {
 		req.ReqCtx = ctx
 	}
 }
 
 func WithMethod(method string) NewReqOption {
-	return func(req *Request) {
+	return func(req *Requ) {
 		req.ReqMethod = method
 	}
 }
 
 func WithJSONBody(payload any) NewReqOption {
-	return func(req *Request) {
+	return func(req *Requ) {
 		tmp, err := json.Marshal(payload)
 		if err != nil {
 			req.ReqErr = err
@@ -81,7 +81,7 @@ func WithJSONBody(payload any) NewReqOption {
 }
 
 func WithBasicAuth(username, password string) NewReqOption {
-	return func(req *Request) {
+	return func(req *Requ) {
 		req.BasicAuth = []string{username, password}
 	}
 }
