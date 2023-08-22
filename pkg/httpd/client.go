@@ -12,8 +12,8 @@ func NewClient() *Client {
 	return &Client{}
 }
 
-func (cli *Client) NewURL(req *Request) *Resp {
-	resp := &Resp{}
+func (cli *Client) NewURL(req *Requ) *Resp {
+	resp := &Resp{Requ: req}
 	if req.ReqErr != nil {
 		resp.RespErr = req.ReqErr
 		return resp

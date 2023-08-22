@@ -8,6 +8,7 @@ import (
 
 type Resp struct {
 	*http.Response
+	Requ *Requ
 
 	RespErr error
 }
