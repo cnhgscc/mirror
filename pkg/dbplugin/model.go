@@ -6,7 +6,7 @@ import (
 
 type M struct {
 	ID        uint                  `gorm:"primarykey"`
-	CreatedAt int                   `gorm:"autoUpdateTime:milli"`
+	CreatedAt int                   `gorm:"autoCreateTime:milli"`
 	UpdatedAt int                   `gorm:"autoUpdateTime:milli"`
 	DeletedAt soft_delete.DeletedAt `gorm:"index;softDelete:milli"`
 }
