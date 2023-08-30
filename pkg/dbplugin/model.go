@@ -5,7 +5,7 @@ import (
 )
 
 type M struct {
-	ID        uint                  `gorm:"primarykey"`
+	ID        uint                  `gorm:"primaryKey"`
 	CreatedAt int                   `gorm:"autoCreateTime:milli"`
 	UpdatedAt int                   `gorm:"autoUpdateTime:milli"`
 	DeletedAt soft_delete.DeletedAt `gorm:"index;softDelete:milli"`
