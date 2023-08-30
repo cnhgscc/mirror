@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"net/url"
 )
 
 type Requ struct {
@@ -71,6 +73,18 @@ func WithJSONBody(payload any) NewReqOption {
 		req.ReqHeader = http.Header{}
 		req.ReqHeader.Set("Content-Type", "application/json")
 		req.ReqBody = string(tmp)
+	}
+}
+
+func WithFORMUrlencodedBody(payload map[string]any) NewReqOption {
+	return func(req *Requ) {
+		urlp := url.Values{}
+		for k, v := range payload {
+			urlp.Set(k, fmt.Sprintf("%v", v))
+		}
+		req.ReqHeader = http.Header{}
+		req.ReqHeader.Set("Content-Type", "application/x-www-form-urlencoded")
+		req.ReqBody = urlp.Encode()
 	}
 }
 
